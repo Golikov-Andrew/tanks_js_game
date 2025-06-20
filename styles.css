@@ -1,0 +1,25 @@
+#display {
+    position: relative;
+    display: inline-block;
+    outline: 1px solid blue;
+    width: 500px;
+    height: 500px;
+}
+
+#ball {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 5px;
+}
+
+progress {
+    display: block;
+}
+
+#controller0 {
+    position: fixed;
+    right: 0;
+    top: 0;
+}
