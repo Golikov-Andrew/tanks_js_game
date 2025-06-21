@@ -1,9 +1,9 @@
 class Stage extends GameObject {
-    constructor(app) {
+    constructor(app, width, height) {
         super(app, null);
         this.app = app
-        this.width = 800
-        this.height = 800
+        this.width = width
+        this.height = height
         this.tanks = []
         this.stones = []
         this.active_bullets = []
@@ -15,10 +15,14 @@ class Stage extends GameObject {
         }
     }
 
-    draw() {
-        this.app.ctx.strokeStyle = 'green'
-        this.app.ctx.beginPath()
-        this.app.ctx.rect(0, 0, this.width, this.height);
-        this.app.ctx.stroke();
+    draw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.strokeStyle = 'green'
+            ctx.beginPath()
+            ctx.rect(0, 0, this.width, this.height);
+            ctx.stroke();
+        // }
+
     }
 }

@@ -6,14 +6,18 @@ class TankGun extends GameObject {
         this.a = 0
     }
 
-    draw() {
-        this.app.ctx.beginPath()
-        this.app.ctx.fillStyle = '#000000'
-        this.app.ctx.fillRect(0, -2, 30, 4)
-        if (this.app.debug_mode) {
-            this.app.draw_circle(0, 0, 5)
-            this.get_global_xya()
-        }
+    draw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.beginPath()
+            ctx.fillStyle = '#000000'
+            ctx.fillRect(0, -2, 30, 4)
+            if (this.app.debug_mode) {
+                this.app.draw_circle(ctx, 0, 0, 5)
+                this.get_global_xya()
+            }
+        // }
+
     }
 }
 
@@ -29,14 +33,18 @@ class TankTower extends GameObject {
         this.children.gun = new TankGun(this.app, this)
     }
 
-    draw() {
-        this.app.ctx.beginPath()
-        this.app.draw_circle(0, 0, this.r)
-        this.app.ctx.stroke()
-        if (this.app.debug_mode) {
-            this.app.draw_circle(0, 0, 2)
-            this.get_global_xya()
-        }
+    draw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.beginPath()
+            this.app.draw_circle(ctx, 0, 0, this.r)
+            ctx.stroke()
+            if (this.app.debug_mode) {
+                this.app.draw_circle(ctx, 0, 0, 2)
+                this.get_global_xya()
+            }
+        // }
+
     }
 
 }
@@ -54,9 +62,6 @@ class Tank extends GameObject {
         this.speed_rotate = 0
         this.is_point_test = true
 
-
-        // let test_obj =
-        // test_obj.is_point_test = true
         this.collision_objects = [
             new CollisionSphere(this.app, this, 25, 0, 30),
             new CollisionSphere(this.app, this, -25, 0, 30),
@@ -172,19 +177,22 @@ class Tank extends GameObject {
 
     }
 
-    draw() {
-        this.app.ctx.beginPath();
-        this.app.ctx.lineWidth = 1;
-        this.app.ctx.strokStyle = '#000000';
-        this.app.ctx.strokeRect(-this.length / 2, -this.width / 2, this.length, this.width)
-        this.app.ctx.closePath()
-        this.app.ctx.stroke();
-        this.app.ctx.fillStyle = this.color;
-        this.app.ctx.fillRect(-40, -this.width / 2, 10, this.width)
-        if (this.app.debug_mode) {
-            this.app.draw_circle(0, 0, 2)
-        }
-        // this.get_global_xy()
+    draw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.strokStyle = '#000000';
+            ctx.strokeRect(-this.length / 2, -this.width / 2, this.length, this.width)
+            ctx.closePath()
+            ctx.stroke();
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-40, -this.width / 2, 10, this.width)
+            if (this.app.debug_mode) {
+                this.app.draw_circle(ctx, 0, 0, 2)
+            }
+        // }
+
 
     }
 

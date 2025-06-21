@@ -66,15 +66,19 @@ class Bullet extends GameObject {
 
     }
 
-    draw() {
-        this.app.ctx.beginPath();
-        this.app.ctx.fillStyle = '#000000';
-        this.app.ctx.fillRect(-this.length / 2, -this.width / 2, this.length, this.width)
-        this.app.ctx.closePath()
-        this.app.ctx.stroke();
-        if(this.app.debug_mode){
-            this.app.draw_circle(0, 0, 2)
-        }
+    draw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.beginPath();
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(-this.length / 2, -this.width / 2, this.length, this.width)
+            ctx.closePath()
+            ctx.stroke();
+            if(this.app.debug_mode){
+                this.app.draw_circle(ctx, 0, 0, 2)
+            }
+        // }
+
     }
 
     boom(){

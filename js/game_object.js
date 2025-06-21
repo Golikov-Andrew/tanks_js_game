@@ -26,20 +26,24 @@ class GameObject {
 
     }
 
-    redraw() {
-        this.app.ctx.save()
-        this.app.ctx.translate(this.x, this.y)
-        this.app.ctx.rotate(this.a)
-        this.draw()
-        for (const key in this.children) {
-            this.children[key].redraw()
-        }
-        if (this.app.debug_mode) {
-            for (let i = 0; i < this.collision_objects.length; i++) {
-                this.collision_objects[i].redraw()
+    redraw(ctx) {
+        // for (const title in this.app.players) {
+        //     let ctx = this.app.players[title].monitor.ctx
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.a)
+            this.draw(ctx)
+            for (const key in this.children) {
+                this.children[key].redraw(ctx)
             }
-        }
-        this.app.ctx.restore()
+            if (this.app.debug_mode) {
+                for (let i = 0; i < this.collision_objects.length; i++) {
+                    this.collision_objects[i].redraw(ctx)
+                }
+            }
+            ctx.restore()
+        // }
+
     }
 
     move() {
