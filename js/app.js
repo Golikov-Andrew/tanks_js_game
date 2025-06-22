@@ -14,15 +14,22 @@ class App {
         this.previous = null
         this.elapsed = null
         // this.gamepad = null
-        this.players = {
-
-        }
+        this.players = {}
+        this.teams = {}
         this.app_root_element = document.getElementById('app_root_element')
+        this.music = new Audio('sound/tanks_game.mp3')
+        this.music.loop = true
+        this.anim_frame = null
+
     }
 
-    add_player(player){
+    add_player(player) {
         this.players[player.title] = player;
         this.app_root_element.appendChild(player.monitor.element)
+    }
+
+    add_team(team) {
+        this.teams[team.title] = team;
     }
 
     set_stage(stage) {
@@ -30,7 +37,20 @@ class App {
     }
 
     init() {
+        let tanks = []
+        for (const title in this.teams) {
+            for (let i = 0; i <this.teams[title].players.length; i++) {
+                tanks.push(this.teams[title].players[i].tank)
+                this.teams[title].players[i].tank.is_active = true
+            }
+
+        }
+        stage_1.add_tanks(tanks)
+
         this.tanks = this.stage.tanks
+        this.music.play()
+
+
     }
 
     update() {
@@ -43,8 +63,9 @@ class App {
             this.stage.active_bullets[i].update()
         }
 
-    }
 
+
+    }
 
 
     frame(timestamp) {
@@ -56,10 +77,28 @@ class App {
             app.players[title].monitor.redraw()
         }
         // app.redraw()
+        for (const title in app.teams) {
+            let team = app.teams[title]
+            let dead = 0
+            for (let i = 0; i < team.players.length; i++) {
+                if (team.players[i].tank.live <= 0) dead++
+            }
+            if(dead === team.players.length){
+                delete app.teams[title]
+
+                // alert(`Команда ${team.title} проиграла!!!`)
+            }
+        }
+        if(Object.keys(app.teams).length === 1){
+            let winner_team_title = Object.keys(app.teams)[0].title
+            alert(`Команда ${winner_team_title} ВЫЙГРАЛА!!!`)
+            window.cancelAnimationFrame(app.anim_frame)
+            return;
+        }
 
 
         app.previous = timestamp
-        window.requestAnimationFrame(app.frame)
+        app.anim_frame = window.requestAnimationFrame(app.frame)
     }
 
     draw_circle(ctx, x, y, r) {
@@ -76,7 +115,7 @@ class App {
             let player = this.players[title]
             let gamepad = navigator.getGamepads()[idx]
             // console.log(gamepad)
-            if (gamepad !== null){
+            if (gamepad !== null) {
                 if (gamepad.id === 'SHANWAN Controller (STANDARD GAMEPAD Vendor: 045e Product: 028e)') {
                     if (gamepad.buttons[0].pressed) {
                         player.tank.fire();
@@ -89,25 +128,20 @@ class App {
                     // }
 
                     if (gamepad.buttons[2].pressed) {
-
-                        if(Date.now() - player.view_changed_at > 1000){
-
+                        if (Date.now() - player.view_changed_at > 100) {
                             player.switch_view()
                         }
-
                     }
 
                     if (gamepad.axes[0] !== 0) {
                         player.tank.speed_rotate = gamepad.axes[0] * 0.05;
-                    }
-                    else {
+                    } else {
                         player.tank.speed_rotate = 0
                     }
 
                     if (gamepad.axes[2] !== 0) {
                         player.tank.children.tower.speed_rotate = gamepad.axes[2] * 0.05;
-                    }
-                    else {
+                    } else {
                         player.tank.children.tower.speed_rotate = 0;
                     }
 
@@ -130,7 +164,6 @@ class App {
         //     return;
         // }
         // this.gamepad = gamepads[0];
-
 
 
     }

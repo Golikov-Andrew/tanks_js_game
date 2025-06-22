@@ -63,11 +63,16 @@ class GameObject {
 
     }
 
+    play_sounds(){
+
+    }
+
     update() {
         this.move()
         this.rotate()
         this.handle_collisions()
         this.update_accept()
+        this.play_sounds()
         for (const child_key in this.children) {
             this.children[child_key].update()
         }

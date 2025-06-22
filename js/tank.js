@@ -4,20 +4,20 @@ class TankGun extends GameObject {
         this.x = 20
         this.y = 0
         this.a = 0
+
+        this.charged = 200
+        this.charge_time = 200
+
     }
 
     draw(ctx) {
-        // for (const title in this.app.players) {
-        //     let ctx = this.app.players[title].monitor.ctx
-            ctx.beginPath()
-            ctx.fillStyle = '#000000'
-            ctx.fillRect(0, -2, 30, 4)
-            if (this.app.debug_mode) {
-                this.app.draw_circle(ctx, 0, 0, 5)
-                this.get_global_xya()
-            }
-        // }
-
+        ctx.beginPath()
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(0, -2, 30, 4)
+        if (this.app.debug_mode) {
+            this.app.draw_circle(ctx, 0, 0, 5)
+            this.get_global_xya()
+        }
     }
 }
 
@@ -34,23 +34,19 @@ class TankTower extends GameObject {
     }
 
     draw(ctx) {
-        // for (const title in this.app.players) {
-        //     let ctx = this.app.players[title].monitor.ctx
-            ctx.beginPath()
-            this.app.draw_circle(ctx, 0, 0, this.r)
-            ctx.stroke()
-            if (this.app.debug_mode) {
-                this.app.draw_circle(ctx, 0, 0, 2)
-                this.get_global_xya()
-            }
-        // }
-
+        ctx.beginPath()
+        this.app.draw_circle(ctx, 0, 0, this.r)
+        ctx.stroke()
+        if (this.app.debug_mode) {
+            this.app.draw_circle(ctx, 0, 0, 2)
+            this.get_global_xya()
+        }
     }
 
 }
 
 class Tank extends GameObject {
-    constructor(app, stage, x, y, a, color, is_human) {
+    constructor(app, stage, x, y, a) {
         super(app, stage);
 
         this.width = 50
@@ -68,21 +64,50 @@ class Tank extends GameObject {
         ]
         this.children.tower = new TankTower(app, this)
 
+        this.gun = this.children.tower.children.gun
+
         this.active_bullets = []
-        this.live = 5
-        this.color = color
-        this.is_human = is_human
+        this.live_max = 5
+        this.live = this.live_max
+
+        this.player = null
+        this.color = null
+        this.team_color = null
+        this.is_human = false
         this.behaviour_tick = 0
         this.behaviour_temp = 10
+        this.sound_tank_active = new Audio('sound/tank_active.mp3')
+        this.sound_tank_move = new Audio('sound/tank_move.mp3')
+        // this.sound_tank_active.loop=true
+        this.is_active = false
 
+    }
+
+    attach_to_player(player){
+        this.player = player
+        this.color = this.player.color
+        this.team_color = this.player.team.color
+        this.is_human = this.player instanceof Human
+        if(this.is_human){
+            this.player.monitor.live_status_element.style.setProperty('--width-val', `100%`)
+        }
     }
 
     dead() {
         remove_from_list(this.app.stage.tanks, this)
+        let snd = new Audio('sound/explosion.mp3')
+        if(!this.sound_tank_move.paused) this.sound_tank_move.pause()
+        if(!this.sound_tank_active.paused) this.sound_tank_active.pause()
+        snd.play()
+        this.is_active = false
     }
 
     damage(val) {
         this.live -= val
+        if(this.player instanceof Human){
+            let val = 100 * this.live / this.live_max
+            this.player.monitor.live_status_element.style.setProperty('--width-val', `${val}px`)
+        }
         if (this.live <= 0) {
             this.dead()
         }
@@ -122,6 +147,18 @@ class Tank extends GameObject {
     }
 
     handle_collisions() {
+
+        // TODO: replace to another place;
+
+        if(this.gun.charged < this.gun.charge_time){
+            this.gun.charged++
+            if(this.player instanceof Human){
+                let val = 100 * this.gun.charged / this.gun.charge_time
+                this.player.monitor.charged_status_element.style.setProperty('--width-val', `${val}px`)
+            }
+        }
+
+
 
         for (let i = 0, c, coords; i < this.collision_objects.length; i++) {
             c = this.collision_objects[i]
@@ -178,28 +215,26 @@ class Tank extends GameObject {
     }
 
     draw(ctx) {
-        // for (const title in this.app.players) {
-        //     let ctx = this.app.players[title].monitor.ctx
-            ctx.beginPath();
-            ctx.lineWidth = 1;
-            ctx.strokStyle = '#000000';
-            ctx.strokeRect(-this.length / 2, -this.width / 2, this.length, this.width)
-            ctx.closePath()
-            ctx.stroke();
-            ctx.fillStyle = this.color;
-            ctx.fillRect(-40, -this.width / 2, 10, this.width)
-            if (this.app.debug_mode) {
-                this.app.draw_circle(ctx, 0, 0, 2)
-            }
-        // }
-
-
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokStyle = '#000000';
+        ctx.strokeRect(-this.length / 2, -this.width / 2, this.length, this.width)
+        ctx.closePath()
+        ctx.stroke();
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-45, -this.width / 2, 10, this.width)
+        ctx.fillStyle = this.team_color;
+        ctx.fillRect(-35, -this.width / 2, 5, this.width)
+        if (this.app.debug_mode) {
+            this.app.draw_circle(ctx, 0, 0, 2)
+        }
     }
 
     fire() {
-        if (this.active_bullets.length > 0) return;
+        if (this.gun.charged < this.gun.charge_time ) return;
+        let fire_sound = new Audio('sound/tank_fire.mp3')
+        fire_sound.play()
         let global_coords = this.children.tower.children.gun.get_global_xya()
-        // console.log(global_coords)
         let new_bullet = new Bullet(
             this.app, this.app.stage, this,
             global_coords.x,
@@ -208,7 +243,25 @@ class Tank extends GameObject {
         )
         this.active_bullets.push(new_bullet)
         this.app.stage.active_bullets.push(new_bullet)
+        this.gun.charged = 0
+
+
+
     }
 
+    play_sounds(){
+        if(this.is_active){
+            if(this.live > 0){
+                if(this.speed < -0.1 || 0.1 < this.speed ){
+                    this.sound_tank_active.pause()
+                    if(this.sound_tank_move.paused) this.sound_tank_move.play()
+                }else{
+                    this.sound_tank_move.pause()
+                    if(this.sound_tank_active.paused) this.sound_tank_active.play()
+                }
+            }
+
+        }
+    }
 
 }

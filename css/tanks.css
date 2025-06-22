@@ -6,3 +6,26 @@
 #app_root_element{
     display: flex;
 }
+.live_status,
+.charged_status{
+    position: relative;
+    /*display: inline-block;*/
+    width: 100px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.51);
+    --width-val: 0px;
+    color: white;
+}
+.live_status::after,
+.charged_status::after{
+
+    position: absolute;
+    content: ' ';
+    /*display: inline-block;*/
+    left: 0;
+    top: 0;
+    width: var(--width-val);
+    height: 20px;
+    background-color: rgba(0, 128, 0, 0.48);
+}
+

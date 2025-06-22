@@ -1,10 +1,12 @@
-class Monitor{
-    constructor(app, player){
+class Monitor {
+    constructor(app, player) {
         this.app = app
         this.player = player
         this.element = document.createElement('div')
         this.element.classList.add('player_monitor')
         this.viewport = document.createElement('canvas')
+        this.default_width = 800
+        this.default_height = 800
         this.viewport.width = 800
         this.viewport.height = 800
         this.viewport.classList.add('viewport')
@@ -12,31 +14,86 @@ class Monitor{
         this.ctx = this.viewport.getContext('2d')
         this.dashboard = document.createElement('div')
         this.dashboard.classList.add('dashboard')
-        this.dashboard.innerHTML = this.player.title
+
+        this.title_element = document.createElement('div')
+        this.title_element.classList.add('title')
+        this.title_element.innerHTML = this.player.title
+
+        this.live_status_element = document.createElement('div')
+        this.live_status_element.classList.add('live_status')
+        this.live_status_element.innerHTML = 'Live'
+
+        this.charged_status_element = document.createElement('div')
+        this.charged_status_element.classList.add('charged_status')
+        this.charged_status_element.innerHTML = 'Charge Bullet'
+
+        this.debug_info_element = document.createElement('div')
+        this.debug_info_element.classList.add('debug_info')
+        this.debug_info_element.innerHTML = ''
+
+        this.dashboard.appendChild(this.title_element)
+        this.dashboard.appendChild(this.live_status_element)
+        this.dashboard.appendChild(this.charged_status_element)
+        this.dashboard.appendChild(this.debug_info_element)
         this.element.appendChild(this.dashboard)
     }
+
+    debug_report(message){
+        this.debug_info_element.innerHTML = message
+    }
+
+    reset_scale() {
+        this.viewport.width = this.default_width
+        this.viewport.height = this.default_height
+    }
+
     redraw() {
-        // app.ctx.clearRect(0, 0, app.viewport_width, app.viewport_height)
         this.ctx.reset()
         this.ctx.save()
         // this.ctx.translate(this.player.tank.x, this.player.tank.y)
-        if(this.player.current_view === 'tank'){
+        if (this.player.current_view === 'stage') {
+
+        } else if (this.player.current_view === 'tank_1') {
             this.ctx.translate(400 - this.player.tank.x, 400 - this.player.tank.y)
         }
-        else if(this.player.current_view === 'tower'){
-            // let global_tower_coords = this.player.tank.children.tower.get_global_xya()
-
-            // this.ctx.rotate(global_tower_coords.a)
+        else if (this.player.current_view === 'tank_2') {
+            // let global_coords = this.player.tank.get_global_xya()
             let x = this.player.tank.x
             let y = this.player.tank.y
+            let a = this.player.tank.a
             let l = Math.sqrt(x * x + y * y);
-            let x_old = x
-            let y_old = y
-            x = l * Math.cos(Math.atan2(y, x_old));
-            y = l * Math.sin(Math.atan2(y, x_old));
 
-            this.ctx.translate(400 - x, 400 - y)
-            this.ctx.rotate(-this.player.tank.a - Math.PI / 2)
+            let x_translate =  - x + 565.685424949 * Math.cos(Math.PI / 2 + a + deg_to_rad(45))
+            let y_translate =  - y + 565.685424949 * Math.sin(Math.PI / 2 + a + deg_to_rad(45))
+            let a_rotate = -a - Math.PI / 2
+
+            // this.debug_report(`coords: ${Math.round(x)} ${Math.round(y)} ${Math.round(rad_to_deg(a))}<br>
+            // Math.cos(a): ${math_cos.toFixed(2)}<br>
+            // Math.sin(a): ${Math.sin(a).toFixed(2)}<br>
+            // x*Math.cos(a): ${(x*math_cos).toFixed(2)}<br>
+            // y*Math.sin(a): ${(y*Math.sin(a)).toFixed(2)}<br>
+            // x_translate: ${x_translate.toFixed(2)}<br>
+            // y_translate: ${y_translate.toFixed(2)}<br>
+            // a_rotate: ${Math.round(rad_to_deg(a_rotate))}<br>
+            // l: ${Math.round(l)}<br>
+            // `)
+
+            this.ctx.rotate(a_rotate)
+            this.ctx.translate(x_translate, y_translate)
+
+        }
+        else if (this.player.current_view === 'tower') {
+            let global_coords = this.player.tank.children.tower.get_global_xya()
+            let x = global_coords.x
+            let y = global_coords.y
+            let a = global_coords.a
+            // let l = Math.sqrt(x * x + y * y);
+
+            let x_translate =  - x + 565.685424949 * Math.cos(Math.PI / 2 + a + deg_to_rad(45))
+            let y_translate =  - y + 565.685424949 * Math.sin(Math.PI / 2 + a + deg_to_rad(45))
+            let a_rotate = -a - Math.PI / 2
+            this.ctx.rotate(a_rotate)
+            this.ctx.translate(x_translate, y_translate)
         }
 
         for (let i = 0; i < app.tanks.length; i++) {

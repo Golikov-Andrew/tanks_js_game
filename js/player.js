@@ -1,34 +1,50 @@
 class Player{
-    constructor(app, title){
+    constructor(app, title, color){
         this.app = app
         this.title = title
+        this.color = color
         this.tank = null
         this.view_changed_at = 0
         this.views = [
             'stage',
-            'tank',
+            'tank_1',
+            'tank_2',
             'tower'
         ]
         this.current_view = this.views[0]
         this.monitor = new Monitor(this.app, this)
+        this.team = null // Team
     }
     set_tank(tank){
         this.tank = tank
+        tank.attach_to_player(this)
     }
-    switch_view(){
-        let idx = this.views.indexOf(this.current_view)
-        idx++
-        if(idx >= this.views.length) idx = 0;
+    attach_to_team(team){
+        this.team = team
+    }
+    switch_view(idx){
+        if(idx === undefined){
+            idx = this.views.indexOf(this.current_view)
+            idx++
+            if(idx >= this.views.length) idx = 0;
+        }
         this.current_view = this.views[idx]
+
+        if(this.current_view === 'stage'){
+            this.monitor.viewport.width = this.app.stage.width
+            this.monitor.viewport.height = this.app.stage.height
+        }else{
+            this.monitor.reset_scale()
+        }
         console.log('change view', this.current_view)
         this.view_changed_at = Date.now()
-        this.monitor.dashboard.innerHTML = this.title + ' ' + this.current_view
+        this.monitor.title_element.innerHTML = this.title + ' ' + this.current_view
     }
 }
 
 class Human extends Player{
-    constructor(app, title, tank){
-        super(app, title);
+    constructor(app, title, color, tank){
+        super(app, title, color);
         this.gamepad = null
         if(tank !== undefined) this.set_tank(tank)
 
@@ -39,7 +55,7 @@ class Human extends Player{
 }
 
 class Bot extends Player{
-    constructor(app, title, ai_level){
+    constructor(app, title, color, ai_level){
         super(app, title);
 
         this.ai_level = ai_level // 1 - 5, very easy, easy, medium, strong, very strong
