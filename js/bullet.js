@@ -53,11 +53,18 @@ class Bullet extends GameObject {
             for (let j = 0, tank; j < this.app.stage.tanks.length; j++) {
                 tank = this.app.stage.tanks[j]
                 if(tank === this.owner) continue;
-                for (let k = 0, col_obj, col_obj_coords; k < tank.collision_objects.length; k++) {
+                for (let k = 0, col_obj, col_obj_coords, is_dead; k < tank.collision_objects.length; k++) {
                     col_obj = tank.collision_objects[k]
                     col_obj_coords = col_obj.get_global_xya()
                     if (is_intersect(coords, col_obj_coords, c.r, col_obj.r)){
-                        tank.damage(this.boom())
+                        is_dead = tank.damage(this.boom())
+                        this.owner.player.points += 2
+                        if(is_dead){
+                            this.owner.player.points += 5
+                            console.log('null', this.owner.player.target_tank)
+                            this.owner.player.target_tank = null
+                        }
+                        this.owner.player.monitor.refresh_points()
                     }
                 }
             }

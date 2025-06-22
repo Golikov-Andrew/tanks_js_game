@@ -27,6 +27,10 @@ class Monitor {
         this.charged_status_element.classList.add('charged_status')
         this.charged_status_element.innerHTML = 'Charge Bullet'
 
+        this.points_status_element = document.createElement('div')
+        this.points_status_element.classList.add('points_status')
+        this.refresh_points()
+
         this.debug_info_element = document.createElement('div')
         this.debug_info_element.classList.add('debug_info')
         this.debug_info_element.innerHTML = ''
@@ -34,8 +38,13 @@ class Monitor {
         this.dashboard.appendChild(this.title_element)
         this.dashboard.appendChild(this.live_status_element)
         this.dashboard.appendChild(this.charged_status_element)
+        this.dashboard.appendChild(this.points_status_element)
         this.dashboard.appendChild(this.debug_info_element)
         this.element.appendChild(this.dashboard)
+    }
+
+    refresh_points(){
+        this.points_status_element.innerHTML = `Points: ${this.player.points}`
     }
 
     debug_report(message){

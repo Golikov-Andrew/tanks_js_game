@@ -88,9 +88,9 @@ class Tank extends GameObject {
         this.color = this.player.color
         this.team_color = this.player.team.color
         this.is_human = this.player instanceof Human
-        if(this.is_human){
+        // if(this.is_human){
             this.player.monitor.live_status_element.style.setProperty('--width-val', `100%`)
-        }
+        // }
     }
 
     dead() {
@@ -104,13 +104,19 @@ class Tank extends GameObject {
 
     damage(val) {
         this.live -= val
-        if(this.player instanceof Human){
-            let val = 100 * this.live / this.live_max
-            this.player.monitor.live_status_element.style.setProperty('--width-val', `${val}px`)
-        }
+        this.player.points-=val
+        this.player.monitor.refresh_points()
+
+        let val_proc = 100 * this.live / this.live_max
+        this.player.monitor.live_status_element.style.setProperty('--width-val', `${val_proc}px`)
+
         if (this.live <= 0) {
             this.dead()
+            this.player.points-=5
+            this.player.monitor.refresh_points()
+            return true
         }
+        return false
     }
 
     behavior() {
@@ -118,29 +124,115 @@ class Tank extends GameObject {
             this.behaviour_tick += 1
             if (this.behaviour_tick >= this.behaviour_temp) {
                 this.behaviour_tick = 0
-                let int = get_rand_int(0, 100)
+                let ai_level = this.player.ai_level
 
-                if (0 <= int && int < 5) {
-                    this.fire()
-                } else if (5 <= int && int < 10) {
-                    this.speed = -1;
-                } else if (10 <= int && int < 15) {
-                    this.speed = 1;
-                } else if (15 <= int && int < 30) {
-                    this.speed = 0;
-                } else if (30 <= int && int < 35) {
-                    this.speed_rotate = 0.05;
-                } else if (35 <= int && int < 40) {
-                    this.speed_rotate = -0.05;
-                } else if (40 <= int && int < 65) {
-                    this.speed_rotate = 0;
-                } else if (65 <= int && int < 70) {
-                    this.children.tower.speed_rotate = 0.05;
-                } else if (70 <= int && int < 75) {
-                    this.children.tower.speed_rotate = -0.05;
-                } else if (75 <= int && int < 100) {
-                    this.children.tower.speed_rotate = 0;
+                if(ai_level === 1){
+                    let int = get_rand_int(0, 100)
+                    if (0 <= int && int < 5) {
+                        this.fire()
+                    } else if (5 <= int && int < 10) {
+                        this.speed = -1;
+                    } else if (10 <= int && int < 15) {
+                        this.speed = 1;
+                    } else if (15 <= int && int < 30) {
+                        this.speed = 0;
+                    } else if (30 <= int && int < 35) {
+                        this.speed_rotate = 0.05;
+                    } else if (35 <= int && int < 40) {
+                        this.speed_rotate = -0.05;
+                    } else if (40 <= int && int < 65) {
+                        this.speed_rotate = 0;
+                    } else if (65 <= int && int < 70) {
+                        this.children.tower.speed_rotate = 0.05;
+                    } else if (70 <= int && int < 75) {
+                        this.children.tower.speed_rotate = -0.05;
+                    } else if (75 <= int && int < 100) {
+                        this.children.tower.speed_rotate = 0;
+                    }
                 }
+
+                else if(ai_level === 2){
+
+                    if(this.player.target_tank === null){
+                        for (const team_title in this.app.teams) {
+                            if(team_title !== this.player.team.title){
+                                for (let i = 0, pl; i <this.app.teams[team_title].players.length; i++) {
+                                    pl = this.app.teams[team_title].players[i]
+                                    if(pl.tank.is_active){
+                                        if(get_distance(pl.tank.x, pl.tank.y, this.x, this.y) < this.player.view_radius_1){
+                                            this.player.target_tank = pl.tank
+                                            console.log('target_tank', this.player.target_tank)
+                                            break
+                                        }
+                                    }
+                                }
+                                break
+                            }
+                        }
+                    }else{
+                        if(get_distance(this.player.target_tank.x, this.player.target_tank.y, this.x, this.y) >= this.player.view_radius_1){
+                            this.player.target_tank = null
+                            console.log('loose target')
+                        }
+                    }
+
+                    let int = get_rand_int(0, 150)
+                    if (0 <= int && int < 5) {
+                        this.fire()
+                    }
+
+
+                    else if (5 <= int && int < 10) {
+                        this.speed = -1;
+                    } else if (10 <= int && int < 15) {
+                        this.speed = 1;
+                    } else if (15 <= int && int < 30) {
+                        this.speed = 0;
+                    }
+                    else if (30 <= int && int < 35) {
+                        this.speed_rotate = 0.05;
+                    } else if (35 <= int && int < 40) {
+                        this.speed_rotate = -0.05;
+                    }
+                    else if (40 <= int && int < 65) {
+                        this.speed_rotate = 0;
+                    }
+
+
+                    // else if (65 <= int && int < 70) {
+                    //     this.children.tower.speed_rotate = 0.05;
+                    // } else if (70 <= int && int < 75) {
+                    //     this.children.tower.speed_rotate = -0.05;
+                    // }
+
+                    // else if (75 <= int && int < 100) {
+                    //     this.children.tower.speed_rotate = 0;
+                    // }
+                    else if (65 <= int && int < 150) {
+                        let target_alpha = 0;
+                        if(this.player.target_tank !== null){
+                            let target_tank_coords = this.player.target_tank.get_global_xya()
+                            let coords = this.get_global_xya()
+                            let tower_coords = this.children.tower.get_global_xya()
+                            let dy = tower_coords.y - target_tank_coords.y
+                            let dx = tower_coords.x - target_tank_coords.x
+                            target_alpha = Math.PI + (Math.atan2(dy, dx) - coords.a) % (Math.PI * 2)
+                            // let beta = coords.a % (Math.PI * 2)
+                            // if(beta - target_alpha >= Math.PI - 0.01){
+                            //     this.children.tower.speed_rotate = -0.05;
+                            //
+                            // }else if(beta - target_alpha <= Math.PI + 0.01){
+                            //     this.children.tower.speed_rotate = 0.05;
+                            // }
+                            // else{
+                            //     this.children.tower.speed_rotate = 0;
+                            // }
+                            this.children.tower.a = target_alpha
+                        }
+                    }
+                }
+
+
             }
 
         }
@@ -152,10 +244,10 @@ class Tank extends GameObject {
 
         if(this.gun.charged < this.gun.charge_time){
             this.gun.charged++
-            if(this.player instanceof Human){
+            // if(this.player instanceof Human){
                 let val = 100 * this.gun.charged / this.gun.charge_time
                 this.player.monitor.charged_status_element.style.setProperty('--width-val', `${val}px`)
-            }
+            // }
         }
 
 
@@ -244,6 +336,8 @@ class Tank extends GameObject {
         this.active_bullets.push(new_bullet)
         this.app.stage.active_bullets.push(new_bullet)
         this.gun.charged = 0
+        this.player.points--
+        this.player.monitor.refresh_points()
 
 
 

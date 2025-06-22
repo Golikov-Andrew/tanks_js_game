@@ -12,8 +12,11 @@ class Player{
             'tower'
         ]
         this.current_view = this.views[0]
-        this.monitor = new Monitor(this.app, this)
         this.team = null // Team
+        this.points = 0
+        this.monitor = new Monitor(this.app, this)
+        this.target_tank = null
+        this.view_radius_1 = 400
     }
     set_tank(tank){
         this.tank = tank
@@ -58,7 +61,8 @@ class Bot extends Player{
     constructor(app, title, color, ai_level){
         super(app, title);
 
-        this.ai_level = ai_level // 1 - 5, very easy, easy, medium, strong, very strong
 
+
+        this.ai_level = ai_level // 1 - 5, very easy, easy, medium, strong, very strong
     }
 }

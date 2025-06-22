@@ -90,7 +90,7 @@ class App {
             }
         }
         if(Object.keys(app.teams).length === 1){
-            let winner_team_title = Object.keys(app.teams)[0].title
+            let winner_team_title = Object.keys(app.teams)[0]
             alert(`Команда ${winner_team_title} ВЫЙГРАЛА!!!`)
             window.cancelAnimationFrame(app.anim_frame)
             return;

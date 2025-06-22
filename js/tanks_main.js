@@ -14,13 +14,13 @@ const stage_1 = new Stage(app, 1400, 1400)
 const team_1 = new Team(app, 'Humans', 'blue');
 
 const player_1 = new Human(app, 'Player 1', '#0976ff')
-const player_2 = new Bot(app, 'Player 2', '#00ff91', 1)
+const player_2 = new Bot(app, 'Player 2', '#00ff91', 2)
 
 team_1.add_player(player_1)
 team_1.add_player(player_2)
 
-const tank_1 = new Tank(app, stage_1, 100, 100, 45)
-const tank_2 = new Tank(app, stage_1, 100, 500, -45)
+const tank_1 = new Tank(app, stage_1, 100, 500, 45)
+const tank_2 = new Tank(app, stage_1, 100, 300, -45)
 
 player_1.set_tank(tank_1)
 player_2.set_tank(tank_2)
@@ -30,10 +30,10 @@ app.add_team(team_1)
 
 const team_2 = new Team(app, 'Bots', 'red');
 
-const bot_1 = new Bot(app, 'Bot 1', '#ff099d', 1)
-const bot_2 = new Bot(app, 'Bot 2', '#ff09fb', 1)
-const bot_3 = new Bot(app, 'Bot 3', '#ff0936', 1)
-const bot_4 = new Bot(app, 'Bot 4', '#a509ff', 1)
+const bot_1 = new Bot(app, 'Bot 1', '#ff099d', 2)
+const bot_2 = new Bot(app, 'Bot 2', '#ff09fb', 2)
+const bot_3 = new Bot(app, 'Bot 3', '#ff0936', 2)
+const bot_4 = new Bot(app, 'Bot 4', '#a509ff', 2)
 
 team_2.add_player(bot_1)
 team_2.add_player(bot_2)
@@ -53,6 +53,7 @@ bot_4.set_tank(tank_6)
 app.add_team(team_2)
 
 app.add_player(player_1)
+player_2.current_view = 'tower'
 app.add_player(player_2)
 
 stage_1.stones = [

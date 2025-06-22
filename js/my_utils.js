@@ -10,6 +10,10 @@ function rad_to_deg(rad) {
     return (180 * rad) / Math.PI
 }
 
+function get_distance(x1, y1, x2, y2){
+    return Math.sqrt( Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
+}
+
 function is_intersect(coords_obj_1, coords_obj_2, obj_1_r, obj_2_r) {
     let l = Math.sqrt(
         Math.pow(coords_obj_1.x - coords_obj_2.x, 2) +
