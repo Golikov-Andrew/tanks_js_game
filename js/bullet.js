@@ -59,8 +59,10 @@ class Bullet extends GameObject {
                     if (is_intersect(coords, col_obj_coords, c.r, col_obj.r)){
                         is_dead = tank.damage(this.boom())
                         this.owner.player.points += 2
+                        this.owner.player.team.points += 2
                         if(is_dead){
                             this.owner.player.points += 5
+                            this.owner.player.team.points += 5
                             console.log('null', this.owner.player.target_tank)
                             this.owner.player.target_tank = null
                         }

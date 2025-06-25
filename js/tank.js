@@ -57,6 +57,7 @@ class Tank extends GameObject {
         this.speed = 0
         this.speed_rotate = 0
         this.is_point_test = true
+        this.radius_external = 60
 
         this.collision_objects = [
             new CollisionSphere(this.app, this, 25, 0, 30),
@@ -105,6 +106,7 @@ class Tank extends GameObject {
     damage(val) {
         this.live -= val
         this.player.points-=val
+        this.player.team.points-=val
         this.player.monitor.refresh_points()
 
         let val_proc = 100 * this.live / this.live_max
@@ -113,6 +115,7 @@ class Tank extends GameObject {
         if (this.live <= 0) {
             this.dead()
             this.player.points-=5
+            this.player.team.points-=5
             this.player.monitor.refresh_points()
             return true
         }
@@ -337,6 +340,7 @@ class Tank extends GameObject {
         this.app.stage.active_bullets.push(new_bullet)
         this.gun.charged = 0
         this.player.points--
+        this.player.team.points--
         this.player.monitor.refresh_points()
 
 

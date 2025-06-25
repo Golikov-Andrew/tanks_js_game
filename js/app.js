@@ -17,6 +17,7 @@ class App {
         this.players = {}
         this.teams = {}
         this.app_root_element = document.getElementById('app_root_element')
+        this.global_info_element = document.getElementById('global_info')
         this.music = new Audio('sound/tanks_game.mp3')
         this.music.loop = true
         this.anim_frame = null
@@ -48,9 +49,17 @@ class App {
         stage_1.add_tanks(tanks)
 
         this.tanks = this.stage.tanks
-        this.music.play()
+        // this.music.play()
 
 
+    }
+
+    show_global_info(){
+        let messages = []
+        for (const team in this.teams) {
+            messages.push(`${team}: ${this.teams[team].points}`)
+        }
+        this.global_info_element.innerHTML = messages.join('<br>')
     }
 
     update() {
@@ -62,6 +71,7 @@ class App {
         for (let i = 0; i < this.stage.active_bullets.length; i++) {
             this.stage.active_bullets[i].update()
         }
+        this.show_global_info()
 
 
 

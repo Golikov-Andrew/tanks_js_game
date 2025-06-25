@@ -4,6 +4,7 @@ class Stone extends GameObject {
 
         this.width = 100
         this.length = 100
+        this.radius_external = 80
         this.x = x
         this.y = y
         this.a = deg_to_rad(a)

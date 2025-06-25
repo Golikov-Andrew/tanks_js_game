@@ -8,47 +8,27 @@ btn_start_game.addEventListener('click',()=>{
     btn_start_game.setAttribute('disabled', 'disabled')
 })
 
-const STAGE_WIDTH = 1400
-const STAGE_HEIGHT = 1400
-
 const app = new App(DEBUG_MODE)
 const stage_1 = new Stage(app, 1400, 1400)
 
-const team_1 = new Team(app, 'Humans', '#0000ff');
+const team_1 = new Team(app, 'Humans', 'blue');
 
 const player_1 = new Human(app, 'Player 1', '#0976ff')
-const player_2 = new Bot(app, 'Player 2', '#00ff91', 2)
-const player_3 = new Bot(app, 'Player 3', '#09dc81', 2)
-const player_4 = new Bot(app, 'Player 4', '#aaff00', 2)
-const player_5 = new Bot(app, 'Player 5', '#00d9ff', 2)
-// const player_2 = new Human(app, 'Player 2', '#00ff91')
+// const player_2 = new Bot(app, 'Player 2', '#00ff91', 2)
+const player_2 = new Human(app, 'Player 2', '#00ff91')
 
 team_1.add_player(player_1)
 team_1.add_player(player_2)
-team_1.add_player(player_3)
-team_1.add_player(player_4)
-team_1.add_player(player_5)
 
-let stage_randomizer = new StageRandomizer()
-let players_points = stage_randomizer.collect_random_points(0, STAGE_WIDTH, 0, STAGE_HEIGHT, 5, 60)
-let bots_points = stage_randomizer.collect_random_points(0, STAGE_WIDTH, 0, STAGE_HEIGHT, 8, 60)
-let stones_points = stage_randomizer.collect_random_points(0, STAGE_WIDTH, 0, STAGE_HEIGHT, 10, 80)
-let bots_points_team_3 = stage_randomizer.collect_random_points(0, STAGE_WIDTH, 0, STAGE_HEIGHT, 8, 60)
-
-player_1.set_tank(new Tank(app, stage_1, players_points[0].x, players_points[0].y, -90))
-player_2.set_tank(new Tank(app, stage_1, players_points[1].x, players_points[1].y, -90))
-player_3.set_tank(new Tank(app, stage_1, players_points[2].x, players_points[2].y, -90))
-player_4.set_tank(new Tank(app, stage_1, players_points[3].x, players_points[3].y, -90))
-player_5.set_tank(new Tank(app, stage_1, players_points[4].x, players_points[4].y, -90))
+player_1.set_tank(new Tank(app, stage_1, 500, 1300, -90))
+player_2.set_tank(new Tank(app, stage_1, 800, 1300, -90))
 
 app.add_team(team_1)
 
 
-const team_2 = new Team(app, 'Bots', '#00FF00');
-const team_3 = new Team(app, 'Beatles', '#FF0000');
+const team_2 = new Team(app, 'Bots', 'red');
 
-
-const bot_1 = new Bot(app, 'Bot 1', '#FFFF00', 2)
+const bot_1 = new Bot(app, 'Bot 1', '#ff099d', 2)
 const bot_2 = new Bot(app, 'Bot 2', '#ff09fb', 2)
 const bot_3 = new Bot(app, 'Bot 3', '#ff0936', 2)
 const bot_4 = new Bot(app, 'Bot 4', '#a509ff', 2)
@@ -66,34 +46,32 @@ team_2.add_player(bot_6)
 team_2.add_player(bot_7)
 team_2.add_player(bot_8)
 
-for (let i = 0, b; i < 8; i++) {
-    b = new Bot(app, `Beatle ${i}`, '#000000', 2)
-    team_3.add_player(b)
-    b.set_tank(new Tank(app, stage_1, bots_points_team_3[i].x, bots_points_team_3[i].y, bots_points_team_3[i].a))
-}
 
-
-bot_1.set_tank(new Tank(app, stage_1, bots_points[0].x, bots_points[0].y, 135, false))
-bot_2.set_tank(new Tank(app, stage_1, bots_points[1].x, bots_points[1].y, 135, false))
-bot_3.set_tank(new Tank(app, stage_1, bots_points[2].x, bots_points[2].y, 135, false))
-bot_4.set_tank(new Tank(app, stage_1, bots_points[3].x, bots_points[3].y, 135, false))
-bot_5.set_tank(new Tank(app, stage_1, bots_points[4].x, bots_points[4].y, 135, false))
-bot_6.set_tank(new Tank(app, stage_1, bots_points[5].x, bots_points[5].y, 135, false))
-bot_7.set_tank(new Tank(app, stage_1, bots_points[6].x, bots_points[6].y, 135, false))
-bot_8.set_tank(new Tank(app, stage_1, bots_points[7].x, bots_points[7].y, 135, false))
+bot_1.set_tank(new Tank(app, stage_1, 300, 300, 135, false))
+bot_2.set_tank(new Tank(app, stage_1, 400, 400, 135, false))
+bot_3.set_tank(new Tank(app, stage_1, 500, 500, 135, false))
+bot_4.set_tank(new Tank(app, stage_1, 600, 600, 135, false))
+bot_5.set_tank(new Tank(app, stage_1, 300, 700, 135, false))
+bot_6.set_tank(new Tank(app, stage_1, 300, 800, 135, false))
+bot_7.set_tank(new Tank(app, stage_1, 700, 900, 135, false))
+bot_8.set_tank(new Tank(app, stage_1, 600, 1000, 135, false))
 
 app.add_team(team_2)
-player_1.current_view = 'tower'
+
 app.add_player(player_1)
 player_2.current_view = 'tower'
 app.add_player(player_2)
 
-app.add_team(team_3)
-
-for (let i = 0; i < stones_points.length; i++) {
-    stage_1.stones.push(new Stone(app, stage_1, stones_points[i].x, stones_points[i].y, stones_points[i].a))
-}
-
+stage_1.stones = [
+    new Stone(app, stage_1, 200, 200, 45),
+    new Stone(app, stage_1, 300, 150, 0),
+    new Stone(app, stage_1, 700, 550, 90),
+    new Stone(app, stage_1, 200, 450, 90),
+    new Stone(app, stage_1, 200, 550, 90),
+    new Stone(app, stage_1, 500, 850, 90),
+    new Stone(app, stage_1, 1000, 1050, 90),
+    new Stone(app, stage_1, 1300, 1250, 90),
+]
 // const tank = new Tank(app, stage_1, 100, 100, 45, 'blue', true)
 // const tank2 = new Tank(app, stage_1, 300, 300, 135, 'red', false)
 

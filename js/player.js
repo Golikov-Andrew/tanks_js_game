@@ -59,7 +59,7 @@ class Human extends Player{
 
 class Bot extends Player{
     constructor(app, title, color, ai_level){
-        super(app, title);
+        super(app, title, color);
 
 
 

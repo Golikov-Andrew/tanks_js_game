@@ -15,10 +15,7 @@ function get_distance(x1, y1, x2, y2){
 }
 
 function is_intersect(coords_obj_1, coords_obj_2, obj_1_r, obj_2_r) {
-    let l = Math.sqrt(
-        Math.pow(coords_obj_1.x - coords_obj_2.x, 2) +
-        Math.pow(coords_obj_1.y - coords_obj_2.y, 2)
-    )
+    let l = get_distance(coords_obj_1.x, coords_obj_1.y, coords_obj_2.x, coords_obj_2.y)
     return l < obj_1_r + obj_2_r;
 }
 

@@ -16,6 +16,7 @@ class GameObject {
         this.gy = 0
         this.ga = 0
         this.is_point_test = false
+        this.radius_external = 0
     }
 
     add_child(key, child_obj) {
