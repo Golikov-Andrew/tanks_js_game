@@ -99,3 +99,12 @@ class Bullet extends GameObject {
 
 
 }
+
+
+class Bullet2 extends Bullet{
+    constructor(app, stage, owner, x, y, a) {
+        super(app, stage, owner, x, y, a);
+        this.width = 2
+        this.length = 4
+    }
+}

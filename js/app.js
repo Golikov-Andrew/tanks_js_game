@@ -2,7 +2,7 @@ let test_x = 0
 let test_y = 0
 
 class App {
-    constructor(debug_mode = false) {
+    constructor(debug_mode = false, modeling_mode = false) {
         this.canvas_element = document.querySelector('#viewport')
         // this.ctx = this.canvas_element.getContext('2d')
         this.viewport_width = 500
@@ -10,6 +10,7 @@ class App {
         this.tanks = []
         this.stage = null
         this.debug_mode = debug_mode
+        this.modeling_mode = modeling_mode
 
         this.previous = null
         this.elapsed = null
@@ -99,7 +100,8 @@ class App {
                 // alert(`Команда ${team.title} проиграла!!!`)
             }
         }
-        if(Object.keys(app.teams).length === 1){
+
+        if(Object.keys(app.teams).length === 1 && !app.modeling_mode){
             let winner_team_title = Object.keys(app.teams)[0]
             alert(`Команда ${winner_team_title} ВЫЙГРАЛА!!!`)
             window.cancelAnimationFrame(app.anim_frame)
@@ -176,5 +178,54 @@ class App {
         // this.gamepad = gamepads[0];
 
 
+    }
+}
+
+class AppModeling extends App{
+    constructor(debug_mode){
+        super(debug_mode, true);
+
+    }
+    init(controlled_object) {
+        this.stage.helicopters = [controlled_object]
+        this.helicopters = this.stage.helicopters
+    }
+    update() {
+        this.gamepad_handle();
+        for (let i = 0; i < this.helicopters.length; i++) {
+            this.helicopters[i].behavior()
+            this.helicopters[i].update()
+        }
+        for (let i = 0; i < this.stage.active_bullets.length; i++) {
+            this.stage.active_bullets[i].update()
+        }
+        this.show_global_info()
+
+
+
+    }
+    frame(timestamp) {
+        if (!app.previous) app.previous = timestamp;
+        app.elapsed = timestamp - app.previous;
+        app.update(app.elapsed / 1000)
+
+        for (const title in app.players) {
+            app.players[title].monitor.redraw()
+        }
+
+        for (const title in app.teams) {
+            let team = app.teams[title]
+            let dead = 0
+            for (let i = 0; i < team.players.length; i++) {
+                if (team.players[i].controlled_object.live <= 0) dead++
+            }
+            if(dead === team.players.length){
+                delete app.teams[title]
+            }
+        }
+
+        app.previous = timestamp
+        // console.log(123)
+        app.anim_frame = window.requestAnimationFrame(app.frame)
     }
 }

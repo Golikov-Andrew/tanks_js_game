@@ -145,3 +145,56 @@ class Monitor {
         this.ctx.restore()
     }
 }
+
+class MonitorModeling extends Monitor{
+    constructor(app, player) {
+        super(app, player);
+
+
+
+    }
+    redraw() {
+        this.ctx.reset()
+        this.ctx.save()
+        if (this.player.current_view === 'stage') {
+
+        } else if (this.player.current_view === 'tank_1') {
+            this.ctx.translate(400 - this.player.controlled_object.x, 400 - this.player.controlled_object.y)
+        }
+        else if (this.player.current_view === 'tank_2') {
+            let x = this.player.controlled_object.x
+            let y = this.player.controlled_object.y
+            let a = this.player.controlled_object.a
+            let l = Math.sqrt(x * x + y * y);
+
+            let x_translate =  - x + 565.685424949 * Math.cos(Math.PI / 2 + a + deg_to_rad(45))
+            let y_translate =  - y + 565.685424949 * Math.sin(Math.PI / 2 + a + deg_to_rad(45))
+            let a_rotate = -a - Math.PI / 2
+
+            this.ctx.rotate(a_rotate)
+            this.ctx.translate(x_translate, y_translate)
+
+        }
+        else if (this.player.current_view === 'tower') {
+            let global_coords = this.player.tank.children.tower.get_global_xya()
+            let x = global_coords.x
+            let y = global_coords.y
+            let a = global_coords.a
+            let x_translate =  - x + 565.685424949 * Math.cos(Math.PI / 2 + a + deg_to_rad(45))
+            let y_translate =  - y + 565.685424949 * Math.sin(Math.PI / 2 + a + deg_to_rad(45))
+            let a_rotate = -a - Math.PI / 2
+            this.ctx.rotate(a_rotate)
+            this.ctx.translate(x_translate, y_translate)
+        }
+
+        for (let i = 0; i < app.stage.helicopters.length; i++) {
+            app.stage.helicopters[i].redraw(this.ctx)
+        }
+
+        for (let i = 0; i < app.stage.active_bullets.length; i++) {
+            app.stage.active_bullets[i].redraw(this.ctx)
+        }
+        app.stage.redraw(this.ctx)
+        this.ctx.restore()
+    }
+}

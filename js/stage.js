@@ -5,6 +5,7 @@ class Stage extends GameObject {
         this.width = width
         this.height = height
         this.tanks = []
+        this.helicopters = []
         this.stones = []
         this.active_bullets = []
     }
