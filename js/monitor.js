@@ -116,8 +116,6 @@ class Monitor {
         }
         app.stage.redraw(this.ctx)
 
-        // console.log(rad_to_deg(app.tanks[0].get_global_a()))
-        // console.log(rad_to_deg(app.tanks[0].children.tower.get_global_a()))
         // let test_xya = app.tanks[0].children.tower.get_global_xya()
         let test_xya = app.tanks[0].collision_objects[1].get_global_xya()
         // console.log(test_xya.x, test_xya.y, rad_to_deg(test_xya.a))
@@ -190,11 +188,20 @@ class MonitorModeling extends Monitor{
         for (let i = 0; i < app.stage.helicopters.length; i++) {
             app.stage.helicopters[i].redraw(this.ctx)
         }
-
+        for (let i = 0; i < app.stage.tanks.length; i++) {
+            app.stage.tanks[i].redraw(this.ctx)
+        }
         for (let i = 0; i < app.stage.active_bullets.length; i++) {
             app.stage.active_bullets[i].redraw(this.ctx)
         }
+        for (let i = 0; i < app.stage.explosions.length; i++) {
+            app.stage.explosions[i].redraw(this.ctx)
+        }
+        for (let i = 0; i < app.tooltips.length; i++) {
+            app.tooltips[i].redraw(this.ctx)
+        }
         app.stage.redraw(this.ctx)
+        this.player.controlled_object.get_sight().draw(this.ctx)
         this.ctx.restore()
     }
 }

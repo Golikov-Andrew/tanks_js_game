@@ -80,5 +80,6 @@ class HumanModeling extends Human {
     constructor(app, title, color) {
         super(app, title, color);
         this.monitor = new MonitorModeling(this.app, this)
+        this.sight = null
     }
 }

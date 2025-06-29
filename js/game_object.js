@@ -23,7 +23,7 @@ class GameObject {
         this.children[key] = child_obj
     }
 
-    draw() {
+    draw(ctx) {
 
     }
 
@@ -137,16 +137,4 @@ class GameObject {
         }
     }
 
-    get_global_a(){
-        let target_obj = this;
-        let a = target_obj.a;
-
-        let next_parent = target_obj.parent
-        while (next_parent !== null){
-            target_obj = next_parent
-            a = a + target_obj.a
-            next_parent = next_parent.parent
-        }
-        return a
-    }
 }

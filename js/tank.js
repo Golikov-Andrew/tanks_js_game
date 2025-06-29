@@ -7,7 +7,24 @@ class TankGun extends GameObject {
 
         this.charged = 200
         this.charge_time = 200
+        this._firing_range_max = 200
+        this._firing_range_min = 50
+        this._firing_range = this._firing_range_max
+        this.children.sight = new Sight(app, this, this._firing_range)
 
+    }
+    get firing_range(){
+        return this._firing_range
+    }
+    set firing_range(val){
+        if(val < this._firing_range_min) {
+            val = this._firing_range_min
+        }
+        if(val > this._firing_range_max) {
+            val = this._firing_range_max
+        }
+        this._firing_range = val
+        this.children.sight.x = this._firing_range
     }
 
     draw(ctx) {
@@ -58,6 +75,7 @@ class Tank extends GameObject {
         this.speed_rotate = 0
         this.is_point_test = true
         this.radius_external = 60
+        this.is_fire = false
 
         this.collision_objects = [
             new CollisionSphere(this.app, this, 25, 0, 30),
@@ -68,7 +86,7 @@ class Tank extends GameObject {
         this.gun = this.children.tower.children.gun
 
         this.active_bullets = []
-        this.live_max = 5
+        this.live_max = 100
         this.live = this.live_max
 
         this.player = null
@@ -101,6 +119,11 @@ class Tank extends GameObject {
         if(!this.sound_tank_active.paused) this.sound_tank_active.pause()
         snd.play()
         this.is_active = false
+    }
+
+    get_sight() {
+        return this.gun.children.sight
+
     }
 
     damage(val) {
@@ -244,6 +267,7 @@ class Tank extends GameObject {
     handle_collisions() {
 
         // TODO: replace to another place;
+        this.fire()
 
         if(this.gun.charged < this.gun.charge_time){
             this.gun.charged++
@@ -326,40 +350,44 @@ class Tank extends GameObject {
     }
 
     fire() {
-        if (this.gun.charged < this.gun.charge_time ) return;
-        let fire_sound = new Audio('sound/tank_fire.mp3')
-        fire_sound.play()
-        let global_coords = this.children.tower.children.gun.get_global_xya()
-        let new_bullet = new Bullet(
-            this.app, this.app.stage, this,
-            global_coords.x,
-            global_coords.y,
-            global_coords.a
-        )
-        this.active_bullets.push(new_bullet)
-        this.app.stage.active_bullets.push(new_bullet)
-        this.gun.charged = 0
-        this.player.points--
-        this.player.team.points--
-        this.player.monitor.refresh_points()
+        if(this.is_fire){
+            if (this.gun.charged < this.gun.charge_time ) return;
+            let fire_sound = new Audio('sound/tank_fire.mp3')
+            fire_sound.play()
+            let global_coords = this.children.tower.children.gun.get_global_xya()
+            let new_bullet = new Bullet(
+                this.app, this.app.stage, this,
+                global_coords.x,
+                global_coords.y,
+                global_coords.a,
+                this.gun.firing_range
+            )
+            this.active_bullets.push(new_bullet)
+            this.app.stage.active_bullets.push(new_bullet)
+            this.gun.charged = 0
+            this.player.points--
+            this.player.team.points--
+            this.player.monitor.refresh_points()
+        }
+
 
 
 
     }
 
     play_sounds(){
-        if(this.is_active){
-            if(this.live > 0){
-                if(this.speed < -0.1 || 0.1 < this.speed ){
-                    this.sound_tank_active.pause()
-                    if(this.sound_tank_move.paused) this.sound_tank_move.play()
-                }else{
-                    this.sound_tank_move.pause()
-                    if(this.sound_tank_active.paused) this.sound_tank_active.play()
-                }
-            }
-
-        }
+        // if(this.is_active){
+        //     if(this.live > 0){
+        //         if(this.speed < -0.1 || 0.1 < this.speed ){
+        //             this.sound_tank_active.pause()
+        //             if(this.sound_tank_move.paused) this.sound_tank_move.play()
+        //         }else{
+        //             this.sound_tank_move.pause()
+        //             if(this.sound_tank_active.paused) this.sound_tank_active.play()
+        //         }
+        //     }
+        //
+        // }
     }
 
 }

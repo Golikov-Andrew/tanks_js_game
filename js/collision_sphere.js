@@ -8,13 +8,13 @@ class CollisionSphere extends GameObject {
         this.ny = this.y
     }
 
-    draw() {
-        this.app.ctx.strokeStyle = 'red'
-        this.app.ctx.beginPath()
-        this.app.draw_circle(0, 0, this.r)
-        this.app.ctx.stroke()
+    draw(ctx) {
+        ctx.strokeStyle = 'red'
+        ctx.beginPath()
+        this.app.draw_circle(ctx,0, 0, this.r)
+        ctx.stroke()
         if(this.app.debug_mode){
-            this.app.draw_circle(0, 0, 2)
+            this.app.draw_circle(ctx, 0, 0, 2)
         }
         // this.get_global_xy()
     }

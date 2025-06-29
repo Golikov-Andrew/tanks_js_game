@@ -1,5 +1,5 @@
 class Bullet extends GameObject {
-    constructor(app, stage, owner, x, y, a) {
+    constructor(app, stage, owner, x, y, a, firing_range) {
         super(app, stage);
 
         this.width = 4
@@ -7,11 +7,14 @@ class Bullet extends GameObject {
         this.x = x
         this.y = y
         this.a = a
+        this.firing_range = firing_range
         this.speed = 6
         // this.speed_rotate = 0
         // this.is_point_test = true
-        this.power = 1
+        this.power = 10
         this.owner = owner
+        // this.firing_range = 100000
+        this.distance_traveled = 0
         this.collision_objects = [
             new CollisionSphere(this.app, this, 0, 0, 3)
         ]
@@ -19,7 +22,9 @@ class Bullet extends GameObject {
     }
 
     handle_collisions(){
-
+        if(this.distance_traveled >= this.firing_range){
+            this.boom();
+        }
         for (let i = 0, c, coords; i < this.collision_objects.length; i++) {
             c = this.collision_objects[i]
             coords = c.get_global_xya(true)
@@ -46,6 +51,7 @@ class Bullet extends GameObject {
                     col_obj_coords = col_obj.get_global_xya()
                     if (is_intersect(coords, col_obj_coords, c.r, col_obj.r)){
                         this.boom()
+                        return;
                     }
                 }
             }
@@ -58,19 +64,24 @@ class Bullet extends GameObject {
                     col_obj_coords = col_obj.get_global_xya()
                     if (is_intersect(coords, col_obj_coords, c.r, col_obj.r)){
                         is_dead = tank.damage(this.boom())
+
+                        this.app.tooltips.push(new Tooltip(this.app, this.app.stage, tank.live.toFixed(2), col_obj_coords.x, col_obj_coords.y))
                         this.owner.player.points += 2
                         this.owner.player.team.points += 2
                         if(is_dead){
                             this.owner.player.points += 5
                             this.owner.player.team.points += 5
+                            // TODO: возможно ошибки, посмотреть внимательно
                             console.log('null', this.owner.player.target_tank)
                             this.owner.player.target_tank = null
                         }
                         this.owner.player.monitor.refresh_points()
+                        return;
                     }
                 }
             }
         }
+
 
 
     }
@@ -89,11 +100,15 @@ class Bullet extends GameObject {
         // }
 
     }
+    move(){
+        super.move()
+        this.distance_traveled += this.speed
+    }
 
     boom(){
+        this.app.stage.explosions.push(new Explosion(this.app, stage_1, this.x, this.y, this.power, 50))
         remove_from_list(this.owner.active_bullets, this)
         remove_from_list(this.app.stage.active_bullets, this)
-        // console.log('boom', this.owner.active_bullets)
         return this.power
     }
 
@@ -102,9 +117,29 @@ class Bullet extends GameObject {
 
 
 class Bullet2 extends Bullet{
-    constructor(app, stage, owner, x, y, a) {
+    constructor(app, stage, owner, x, y, a, firing_range) {
         super(app, stage, owner, x, y, a);
         this.width = 2
         this.length = 4
+        this.firing_range = firing_range
+        this.speed = 10
+        this.distance_traveled = 0
+        this.power = 1
     }
+    // move(){
+    //     super.move()
+    //     this.distance_traveled += this.speed
+    // }
+    boom(){
+        this.app.stage.explosions.push(new Explosion(this.app, stage_1, this.x, this.y, this.power, 100))
+        remove_from_list(this.owner.active_bullets, this)
+        remove_from_list(this.app.stage.active_bullets, this)
+        return this.power
+    }
+    // handle_collisions() {
+    //     super.handle_collisions();
+    //     if(this.distance_traveled >= this.firing_range){
+    //         this.boom();
+    //     }
+    // }
 }

@@ -8,6 +8,7 @@ class App {
         this.viewport_width = 500
         this.viewport_height = 500
         this.tanks = []
+        this.tooltips = []
         this.stage = null
         this.debug_mode = debug_mode
         this.modeling_mode = modeling_mode
@@ -189,6 +190,16 @@ class AppModeling extends App{
     init(controlled_object) {
         this.stage.helicopters = [controlled_object]
         this.helicopters = this.stage.helicopters
+        for (const title in this.teams) {
+            for (let i = 0; i <this.teams[title].players.length; i++) {
+
+                if(this.teams[title].players[i].tank !== null){
+                    this.stage.tanks.push(this.teams[title].players[i].tank)
+                    this.teams[title].players[i].tank.is_active = true
+                }
+            }
+
+        }
     }
     update() {
         this.gamepad_handle();
@@ -198,6 +209,15 @@ class AppModeling extends App{
         }
         for (let i = 0; i < this.stage.active_bullets.length; i++) {
             this.stage.active_bullets[i].update()
+        }
+        for (let i = 0; i < this.stage.explosions.length; i++) {
+            this.stage.explosions[i].update()
+        }
+        for (let i = 0; i < this.stage.tanks.length; i++) {
+            this.stage.tanks[i].update()
+        }
+        for (let i = 0; i < this.tooltips.length; i++) {
+            this.tooltips[i].update()
         }
         this.show_global_info()
 

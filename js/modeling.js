@@ -1,23 +1,31 @@
-const DEBUG_MODE = false
+const DEBUG_MODE = true
 const MODELING_MODE = true
 let gamepad;
 
-const STAGE_WIDTH = 400
-const STAGE_HEIGHT = 400
+const STAGE_WIDTH = 600
+const STAGE_HEIGHT = 600
 
 const app = new AppModeling(DEBUG_MODE, MODELING_MODE)
 const stage_1 = new Stage(app, STAGE_WIDTH, STAGE_HEIGHT)
 
 const team_1 = new Team(app, 'Humans', '#0000ff');
+const team_2 = new Team(app, 'Bots', '#ff0000');
 
 const player_1 = new HumanModeling(app, 'Player 1', '#0976ff')
+const player_2 = new Bot(app, 'Bot 1', '#0976ff', 1)
 
 team_1.add_player(player_1)
+team_2.add_player(player_2)
 
-const controlled_object = new Helicopter(app, stage_1, 200,200, 0)
+// const controlled_object = new Helicopter(app, stage_1, 100,300, 0)
+const controlled_object = new Tank(app, stage_1, 100,300, 0)
+const bot_tank = new Tank(app, stage_1, 300,200, 0)
 player_1.set_controlled_object(controlled_object)
+player_2.set_controlled_object(bot_tank)
+player_2.set_tank(bot_tank)
 
 app.add_team(team_1)
+app.add_team(team_2)
 
 // player_1.current_view = 'tower'
 app.add_player(player_1)
@@ -42,6 +50,13 @@ window.onkeydown = function (e) {
 
         case " ":
             player_to_bind_keyboard.controlled_object.is_fire = true
+            break;
+
+        case "w":
+            player_to_bind_keyboard.controlled_object.gun.firing_range += 2
+            break;
+        case "s":
+            player_to_bind_keyboard.controlled_object.gun.firing_range -= 2
             break;
 
         case "ArrowLeft":

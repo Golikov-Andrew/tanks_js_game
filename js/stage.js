@@ -8,6 +8,7 @@ class Stage extends GameObject {
         this.helicopters = []
         this.stones = []
         this.active_bullets = []
+        this.explosions = []
     }
 
     add_tanks(tanks_list) {
